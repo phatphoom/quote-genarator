@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fetch JSON Data</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      li {
+        margin-bottom: 10px;
+        border: 1px solid #000;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Quote</h1>
+      <ul id="data-list"></ul>
+      <button id="random-button">Get Quote</button>
+      <a class="twitter-share-button" onclick="tweet()"> Tweet</a>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const dataList = document.getElementById("data-list");
+        const randomButton = document.getElementById("random-button");
+        const quotes = [];
+        let twitter = document.querySelector(".twitter-share-button");
+
+        // Fetch JSON data
+        fetch("quotes.json")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Store JSON data in the 'quotes' array
+            quotes.push(...data);
+
+            // Display a random quote initially
+            displayRandomQuote();
+
+            // Add click event listener to the button
+            randomButton.addEventListener("click", displayRandomQuote);
+          })
+          .catch((error) => {
+            console.error("There was a problem fetching the data:", error);
+          });
+
+        function displayRandomQuote() {
+          // Clear the previous quote
+          dataList.innerHTML = "";
+
+          // Get a random index within the 'quotes' array length
+          const randomIndex = Math.floor(Math.random() * quotes.length);
+
+          // Create a list item for the random quote
+          const listItem = document.createElement("li");
+          listItem.textContent = `Quote: ${quotes[randomIndex].quote} -${quotes[randomIndex].author}`;
+          let temporary = `${quotes[randomIndex].quote} -${quotes[randomIndex].author}`;
+          tweet(temporary);
+          dataList.appendChild(listItem);
+        }
+        function tweet(quote) {
+          let tweets = `https://twitter.com/intent/tweet?text=${quote}`;
+          twitter.href = tweets;
+        }
+      });
+    </script>
+  </body>
+</html>
